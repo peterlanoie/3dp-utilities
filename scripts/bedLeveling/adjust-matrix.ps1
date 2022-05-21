@@ -88,7 +88,7 @@ function RunJog {
 		z = $zJog
 	}
 	
-	."$PSCommandPath/../octoprint/call-api.ps1" -operation "printer/printhead" -method POST -payload $jogPayload
+	."$PSScriptRoot/../octoprint/call-api.ps1" -operation "printer/printhead" -method POST -payload $jogPayload
 }
 
 $testPointIndex = -1
