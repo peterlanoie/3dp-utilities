@@ -140,7 +140,7 @@ while($running){
 		}
 		"Enter" {
 			[console]::beep(800,100)
-			Write-Host (Speak("Saving new Z adjustment")) $currentTestPoint.Offset
+			Write-Host (Speak("Saving new Z adjustment")) $currentTestPoint.Offset -ForegroundColor Green
 #			$currentTestPoint.Offset = $zAdjustment
 			$command = "M421 I$pointX J$pointY Q$($currentTestPoint.Offset)"
 			. "$PSScriptRoot\..\octoprint\send-commands.ps1" -gcode $command
@@ -154,7 +154,7 @@ while($running){
 	}
 	switch -regex ($keyInput.KeyChar){
 		"r" { 
-			Write-Host "Resetting adjustment"
+			Write-Host "Resetting adjustment" -ForegroundColor Green
 			RunJog($currentTestPoint.Offset * -1)
 			$currentTestPoint.Offset = 0
 			$currentTestPoint.AdjustedZ = $testZgap
@@ -184,9 +184,8 @@ while($running){
 			. "$PSScriptRoot\goto-testpoint.ps1" $currentTestPoint.X $currentTestPoint.Y $testZgap -noecho -bedMaxX $bedMaxX -bedMaxY $bedMaxY
 		}
 		"s" {
-
 			foreach ($circuitPoint in $testPoints) {
-				Write-Host "Going to test point: $($circuitPoint.X) $($circuitPoint.Y)"
+				Write-Host "Going to test point: $($circuitPoint.X) $($circuitPoint.Y)" -ForegroundColor Green
 				. "$PSScriptRoot\goto-testpoint.ps1" $circuitPoint.X $circuitPoint.Y $testZgap -noecho -bedMaxX $bedMaxX -bedMaxY $bedMaxY
 				Start-Sleep -Seconds 2
 			}
@@ -207,7 +206,7 @@ while($running){
 			Write-Warning "Z is at 0, cannot adjust further"
 			$newAdjustment = 0
 		} else {
-			Write-Host "Jogging Z by $jog"
+			Write-Host "Jogging Z by $jog" -ForegroundColor Green
 			RunJog($jog)
 			$currentTestPoint.Offset = $newAdjustment
 			$currentTestPoint.AdjustedZ = $testZgap + $currentTestPoint.Offset
