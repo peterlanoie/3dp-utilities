@@ -60,7 +60,7 @@ function PrintHelp {
 	Write-Host "  - [S] run test point circuit path"
 	Write-Host "  - [M] to toggle speech mode"
 	Write-Host "  - [H] print this help"
-	Write-Host "  - Press Q to quit."
+	Write-Host "  - Press Q or [ESC] to quit."
 }
 
 PrintHelp
@@ -94,7 +94,8 @@ function RunJog {
 $testPointIndex = -1
 $nextTestPointIndex = 0
 
-while($keyInput.KeyChar -ne "q"){
+$running = $true
+while($running){
 	if ($nextTestPointIndex -ne $testPointIndex) {
 		$currentTestPoint = $testPoints[($testPointIndex = $nextTestPointIndex)]
 		Write-Host "Going to test point $($currentTestPoint.X) $($currentTestPoint.Y)"
@@ -141,6 +142,9 @@ while($keyInput.KeyChar -ne "q"){
 			$currentTestPoint.AdjustedZ = $testZgap
 			break
 		}
+		"Escape" {
+			$running = $false
+		}
 	}
 	switch -regex ($keyInput.KeyChar){
 		"r" { 
@@ -151,8 +155,7 @@ while($keyInput.KeyChar -ne "q"){
 			$phrase = "reset adjustment"
 		}
 		"q" {
-			$phrase = "quit"
-			Write-Host "Quitting"
+			$running = $false
 		}
 		"m" {
 			Write-Host (Speak("Speech is " + (($speechOn = !$speechOn) ? "on" : "off")))
@@ -209,6 +212,10 @@ while($keyInput.KeyChar -ne "q"){
 		Speak($phrase) | Out-Null
 	}
 	
+	if (!$running) {
+		$phrase = "quit"
+		Write-Host "Quitting"
+	}
 	#	Write-Host $direction
 }
 
