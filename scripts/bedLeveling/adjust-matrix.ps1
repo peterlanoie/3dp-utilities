@@ -2,7 +2,7 @@
 param (
 	[int] $bedMaxX = 235,
 	[int] $bedMaxY = 235,
-	[int] $testZgap = .2,
+	[decimal] $testZgap = 0.2,
 	[switch] $speak, 
 	[switch] $nohome
 )
@@ -21,7 +21,6 @@ class Offset {
 	}
 }
 
-[decimal]$testZgap = 0.2
 [decimal]$jogDelta = 0.01
 
 $testPoints = @(
