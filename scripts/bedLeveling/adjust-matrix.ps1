@@ -3,7 +3,8 @@ param (
 	[int] $bedMaxX = 235,
 	[int] $bedMaxY = 235,
 	[int] $testZgap = .2,
-	[switch] $speak
+	[switch] $speak, 
+	[switch] $nohome
 )
 
 class Offset {
@@ -94,6 +95,11 @@ function RunJog {
 $testPointIndex = -1
 $nextTestPointIndex = 0
 
+if (!$nohome) {
+	# First we gotta find home
+	Write-Host "Homing printer"
+	."$PSScriptRoot\..\octoprint\send-commands.ps1" "G28 X Y Z" -noinfo
+}
 $running = $true
 while($running){
 	if ($nextTestPointIndex -ne $testPointIndex) {
