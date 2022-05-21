@@ -56,7 +56,7 @@ function PrintHelp {
 	Write-Host "  - [Down Arrow] to lower Z by 0.01mm"
 	Write-Host "  - [Enter] to send test point adjustment (mesh Z-delta) to printer"
 	Write-Host "  - [R] to reset adjustment"
-	Write-Host "  - [T] got bed center and back to current test point"
+	Write-Host "  - [T] goto bed center and back to current test point"
 	Write-Host "  - [S] run test point circuit path"
 	Write-Host "  - [M] to toggle speech mode"
 	Write-Host "  - [H] print this help"
@@ -97,7 +97,7 @@ $nextTestPointIndex = 0
 if (!$nohome) {
 	# First we gotta find home
 	Write-Host "Homing printer"
-	."$PSScriptRoot\..\octoprint\send-commands.ps1" "G28 X Y Z" -noinfo
+	. "$PSScriptRoot\..\octoprint\send-commands.ps1" "G28 X Y Z" -noinfo
 }
 $running = $true
 while($running){
@@ -181,8 +181,10 @@ while($running){
 		"t" {
 			. "$PSScriptRoot\..\octoprint\goto.ps1" ($bedMaxX / 2) ($bedMaxY / 2) 10 6000
 			. "$PSScriptRoot\goto-testpoint.ps1" $currentTestPoint.X $currentTestPoint.Y $testZgap -noecho -bedMaxX $bedMaxX -bedMaxY $bedMaxY
+			Speak("Testing mesh point $($currentTestPoint.X) $($currentTestPoint.Y)")
 		}
 		"s" {
+			Speak("Running mesh test point circuit")
 			foreach ($circuitPoint in $testPoints) {
 				$dwellSeconds = 2
 				Write-Host "Going to test point: $($circuitPoint.X) $($circuitPoint.Y) with a $dwellSeconds second pause" -ForegroundColor Green
@@ -213,14 +215,14 @@ while($running){
 			$currentTestPoint.AdjustedZ = $testZgap + $currentTestPoint.Offset
 		}
 	}
-#	[console]::beep(400,100)
-	if ($phrase.Length -gt 0) {
-		Speak($phrase) | Out-Null
-	}
 	
 	if (!$running) {
-		$phrase = "quit"
+		$phrase = "Have a nice day!"
 		Write-Host "Quitting"
+	}
+
+	if ($phrase.Length -gt 0) {
+		Speak($phrase) | Out-Null
 	}
 	#	Write-Host $direction
 }
