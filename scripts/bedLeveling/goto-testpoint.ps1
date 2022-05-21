@@ -38,8 +38,10 @@ for ($i = 0; $i -lt $testGridYpoints; $i++) {
 $x = $xGridPoints[$gridPointX];
 $y = $yGridPoints[$gridPointY];
 
+$travelHeight = $z + 1
+
 $commands = "
-G0 Z1 F6000
+G0 Z$travelHeight F6000
 G0 X$x Y$y F6000
 G0 Z$z F500"
 
