@@ -184,9 +184,11 @@ while($running){
 		}
 		"s" {
 			foreach ($circuitPoint in $testPoints) {
-				Write-Host "Going to test point: $($circuitPoint.X) $($circuitPoint.Y)" -ForegroundColor Green
+				$dwellSeconds = 2
+				Write-Host "Going to test point: $($circuitPoint.X) $($circuitPoint.Y) with a $dwellSeconds second pause" -ForegroundColor Green
 				. "$PSScriptRoot\goto-testpoint.ps1" $circuitPoint.X $circuitPoint.Y $testZgap -noecho -bedMaxX $bedMaxX -bedMaxY $bedMaxY
-				Start-Sleep -Seconds 2
+				. "$PSScriptRoot\..\octoprint\send-commands.ps1" "G4 S$dwellSeconds" -noinfo
+				#Start-Sleep -Seconds 2
 			}
 			. "$PSScriptRoot\goto-testpoint.ps1" $currentTestPoint.X $currentTestPoint.Y $testZgap -noecho -bedMaxX $bedMaxX -bedMaxY $bedMaxY
 		}
