@@ -11,19 +11,19 @@ Write-Host "Incremental flow adjustment routine."
 #Write-Host "  - [Z] Enter current flow rate"
 Write-Host "  - Feed Rate"
 Write-Host "    - [F] To set current feedrate"
-Write-Host "    - [Right Arrow] increase feedrate by 1%"
-Write-Host "    - [Left Arrow] decrease feedrate by 1%"
+Write-Host "    - ► [Right Arrow] increase feedrate by 1%"
+Write-Host "    - ◄ [Left Arrow] decrease feedrate by 1%"
 Write-Host "    - [SHIFT]+[F] Reset to initial feedrate ($startFeedRate%)"
 Write-Host "  - Flow Rate"
 Write-Host "    - [Z] To set current flowrate"
-Write-Host "    - [Up Arrow] increase flowrate by 1%"
-Write-Host "    - [Down Arrow] decrease flowrate by 1%"
+Write-Host "    - ▲ [Up Arrow] increase flowrate by 1%"
+Write-Host "    - ▼ [Down Arrow] decrease flowrate by 1%"
 Write-Host "    - [SHIFT]+[Z] Reset to initial flowrate ($startFlowRate%)"
 Write-Host "  - Press Q to quit."
 
 while($keyInput.KeyChar -ne "q"){
-	Write-Host "Current flow rate: $flowRate%"
-	Write-Host "Current feed rate: $feedRate%"
+	Write-Host "Current flow rate: $flowRate% ▲ ▼"
+	Write-Host "Current feed rate: $feedRate% ◄ ►"
 	$keyInput = [System.Console]::ReadKey($true)
 	$feedDirection = $flowDirection = 0
 	if ($keyInput.Modifiers -eq "Shift") {
