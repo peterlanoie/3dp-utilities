@@ -3,9 +3,7 @@ param (
 	# input file(s)
 	[Parameter(ValueFromPipeline = $true, Mandatory = $true)]$infile,
 
-	[string] $outFileName,
-
-	[int] $flowPercent = 125,
+	[int] $flowPercent = 100,
 
 	[int] $minLayer = 1,
 
