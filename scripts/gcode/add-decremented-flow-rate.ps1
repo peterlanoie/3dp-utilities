@@ -31,7 +31,7 @@ Process {
 	$decrementIndex = 0
 	$flowRates = New-Object decimal[] ($adjustedLayers + 1)
 	for ($i = $startLayer; $i -le $endLayer; $i++) {
-		$layerFlow = $endFlowPercent + ($flowDecrement * $decrementIndex)
+		$layerFlow = $endFlowPercent + ($flowDecrement * ($adjustedLayers - $decrementIndex))
 		Write-Verbose "Layer $i flow rate: $layerFlow"
 		$flowRates[$decrementIndex] = $layerFlow
 		$decrementIndex++
