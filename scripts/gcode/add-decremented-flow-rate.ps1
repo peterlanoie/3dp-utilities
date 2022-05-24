@@ -43,6 +43,10 @@ Process {
 		param ($actionArgs)
 		
 		if ($actionArgs.isNewLayer -and $actionArgs.layerNumber -ge $startLayer -and $actionArgs.layerNumber -le $endLayer) {
+			# This check ensure we can REPEAT this start to work with "One at a time" slicings
+			if ($actionArgs.isNewLayer -and $actionArgs.layerNumber -eq $startLayer) {
+				$script:actionIndex = 0
+			}
 			# Write-Verbose "Flow rates:"
 			# $flowRates | Write-Verbose
 			Write-Verbose "Decrement index: $actionIndex"
