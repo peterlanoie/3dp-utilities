@@ -8,17 +8,16 @@ $flowRate = $newFlowRate = $startFlowRate
 $feedRate = $newFeedRate = $startFeedRate
 
 Write-Host "Incremental flow adjustment routine."
-#Write-Host "  - [Z] Enter current flow rate"
 Write-Host "  - Feed Rate"
 Write-Host "    - [F] To set current feedrate"
 Write-Host "    - ► [Right Arrow] increase feedrate by 1%"
 Write-Host "    - ◄ [Left Arrow] decrease feedrate by 1%"
 Write-Host "    - [SHIFT]+[F] Reset to initial feedrate ($startFeedRate%)"
 Write-Host "  - Flow Rate"
-Write-Host "    - [Z] To set current flowrate"
+Write-Host "    - [E] To set current flowrate"
 Write-Host "    - ▲ [Up Arrow] increase flowrate by 1%"
 Write-Host "    - ▼ [Down Arrow] decrease flowrate by 1%"
-Write-Host "    - [SHIFT]+[Z] Reset to initial flowrate ($startFlowRate%)"
+Write-Host "    - [SHIFT]+[E] Reset to initial flowrate ($startFlowRate%)"
 Write-Host "  - Press Q to quit."
 
 while($keyInput.KeyChar -ne "q"){
@@ -53,7 +52,7 @@ while($keyInput.KeyChar -ne "q"){
 			}
 		}
 		switch -regex ($keyInput.KeyChar){
-			"z" {
+			"e" {
 				$flowRate = $newFlowRate = [int](Read-Host -Prompt "Enter current flow rate")
 			}
 			"f" {
@@ -71,12 +70,12 @@ while($keyInput.KeyChar -ne "q"){
 		$flowRate = $newFlowRate
 		Write-Host "Setting new flow rate: $flowRate%"
 		$command = "M221 S$flowRate"
-		. "$PSScriptRoot\send-commands.ps1" -gcode $command -noinfo
+		. "$PSScriptRoot\octoprint\send-commands.ps1" -gcode $command -noinfo
 	}
 	if ($newFeedRate -ne $feedRate) {
 		$feedRate = $newFeedRate
 		Write-Host "Setting new feed rate: $feedRate%"
 		$command = "M220 S$feedRate"
-		. "$PSScriptRoot\send-commands.ps1" -gcode $command -noinfo
+		. "$PSScriptRoot\octoprint\send-commands.ps1" -gcode $command -noinfo
 	}
 }
