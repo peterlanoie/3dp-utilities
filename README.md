@@ -7,10 +7,12 @@ This repo is a collection of 3D printing utilities.
 - ***anything here that controls the printer does so through OctoPrint's web API.***
 
 ## Printer control/adjustment
-These use OctoPrint. You'll need to have a valid API key the first time you use of of these scripts. The key and OctoPrint URL will be saved locally for you.
+These use OctoPrint. You'll need to have a valid API key the first time you use one of these scripts. The key and OctoPrint URL will be saved locally for you.
 
 - [Bed Leveling Mesh Adjuster](scripts/bedLeveling/README.md) - Utility to help manually adjust the auto bed leveling mesh through OctoPrint.
-- [Flow and Feed rates adjuster](adjust-flow-fee-rates.ps1) - helper to adjust the feed and flow rates of an active print with arrow keys instead of having to use the printer's UI.
+Run: `scripts/bedLeveling/adjust-matrix.ps1`
+- [Flow and Feed rates adjuster](scripts/adjust-flow-feed-rates.ps1) - helper to adjust the feed and flow rates of an active print with arrow keys instead of having to use the printer's UI.
+Run: `scripts/adjust-flow-feed-rates.ps1`
 
 ## Gcode modifiers
 
