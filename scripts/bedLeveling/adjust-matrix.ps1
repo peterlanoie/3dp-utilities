@@ -43,8 +43,12 @@ $testPoints = @(
 )
 
 function PrintHelp {
+	Write-Host "###############################"
+	Write-Host "##   Z adjustment routine.   ##"
+	Write-Host "###############################"
 	Write-Host "Z adjustment routine."
-	Write-Host "  - Navigate test points with [<] and [>]"
+	Write-Host "Test point navigation:"
+	Write-Host "  - Cycle through test points with [,] and [.] (e.g. [<] and [>] without the shift key)"
 	Write-Host "  - Go direct to test points using the following keys:"
 	Write-Host "     ------ rear ------"
 	Write-Host "     [3]  [4]  [B]  [C]"
@@ -52,18 +56,28 @@ function PrintHelp {
 	Write-Host "     [1]  [6]  [9]  [E]"
 	Write-Host "     [0]  [7]  [8]  [F]"
 	Write-Host "     ------ front -----"
+	Write-Host "  - [X] to move to the bed center (typical homing location)"
+	Write-Host ""
+	Write-Host "Mesh adjustments:"
 	Write-Host "  - [Up Arrow] to raise Z by 0.01mm"
 	Write-Host "  - [Down Arrow] to lower Z by 0.01mm"
 	Write-Host "  - [Enter] to send test point adjustment (mesh Z-delta) to printer"
 	Write-Host "  - [R] to reset adjustment"
+	Write-Host ""
+	Write-Host "Test movements:"
 	Write-Host "  - [T] goto bed center and back to current test point"
 	Write-Host "  - [S] run test point circuit path"
+	Write-Host ""
+	Write-Host "Misc:"
 	Write-Host "  - [M] to toggle speech mode"
 	Write-Host "  - [H] print this help"
 	Write-Host "  - Press Q or [ESC] to quit."
+	Write-Host "###############################"
 }
 
 PrintHelp
+
+$octoPrintPath = "$PSScriptRoot\..\octoprint"
 
 $speechOn = $speak
 $speechReady = $false
@@ -88,7 +102,7 @@ function RunJog {
 		z = $zJog
 	}
 	
-	."$PSScriptRoot/../octoprint/call-api.ps1" -operation "printer/printhead" -method POST -payload $jogPayload
+	."$octoPrintPath/call-api.ps1" -operation "printer/printhead" -method POST -payload $jogPayload
 }
 
 $testPointIndex = -1
@@ -97,14 +111,14 @@ $nextTestPointIndex = 0
 if (!$nohome) {
 	# First we gotta find home
 	Write-Host "Homing printer"
-	. "$PSScriptRoot\..\octoprint\send-commands.ps1" "G28 X Y Z" -noinfo
+	. "$octoPrintPath\send-commands.ps1" "G28 X Y Z" -noinfo
 }
 $running = $true
 while($running){
 	if ($nextTestPointIndex -ne $testPointIndex) {
 		$currentTestPoint = $testPoints[($testPointIndex = $nextTestPointIndex)]
 		Write-Host "Going to test point $($currentTestPoint.X) $($currentTestPoint.Y)"
-		. "$PSScriptRoot\..\BedLeveling\goto-testpoint.ps1" $currentTestPoint.X $currentTestPoint.Y $testZgap -noecho -bedMaxX $bedMaxX -bedMaxY $bedMaxY
+		. "$PSScriptRoot\goto-testpoint.ps1" $currentTestPoint.X $currentTestPoint.Y $testZgap -noecho -bedMaxX $bedMaxX -bedMaxY $bedMaxY
 		Speak("Test point $($currentTestPoint.X) $($currentTestPoint.Y)")
 		$pointX = $currentTestPoint.X
 		$pointY = $currentTestPoint.Y
@@ -142,7 +156,7 @@ while($running){
 			Write-Host (Speak("Saving new Z adjustment")) $currentTestPoint.Offset -ForegroundColor Green
 #			$currentTestPoint.Offset = $zAdjustment
 			$command = "M421 I$pointX J$pointY Q$($currentTestPoint.Offset)"
-			. "$PSScriptRoot\..\octoprint\send-commands.ps1" -gcode $command
+			. "$octoPrintPath\send-commands.ps1" -gcode $command
 			$currentTestPoint.Offset = 0
 			$currentTestPoint.AdjustedZ = $testZgap
 			break
@@ -171,17 +185,27 @@ while($running){
 		"[n\.]" {
 			if ($testPointIndex -lt $testPoints.Length-1) {
 				$nextTestPointIndex = $testPointIndex + 1
+			} else {
+				$nextTestPointIndex = 0 # cycle back to the beginning
 			}
 		}
 		"[p,]" {
 			if ($testPointIndex -gt 0) {
 				$nextTestPointIndex = $testPointIndex - 1
+			} else {
+				$nextTestPointIndex = $testPoints.Length-1
 			}
 		}
 		"t" {
-			. "$PSScriptRoot\..\octoprint\goto.ps1" ($bedMaxX / 2) ($bedMaxY / 2) 10 6000
+			. "$octoPrintPath\goto.ps1" ($bedMaxX / 2) ($bedMaxY / 2) 10 6000
 			. "$PSScriptRoot\goto-testpoint.ps1" $currentTestPoint.X $currentTestPoint.Y $testZgap -noecho -bedMaxX $bedMaxX -bedMaxY $bedMaxY
 			Speak("Testing mesh point $($currentTestPoint.X) $($currentTestPoint.Y)")
+		}
+		"x" {
+			. "$octoPrintPath\goto.ps1" ($bedMaxX / 2) ($bedMaxY / 2) 10 6000
+			. "$octoPrintPath\goto.ps1" ($bedMaxX / 2) ($bedMaxY / 2) $testZgap 1500
+			$nextTestPointIndex = $testPointIndex = -1
+			Speak("Going to bed center")
 		}
 		"s" {
 			Speak("Running mesh test point circuit")
@@ -189,7 +213,7 @@ while($running){
 				$dwellSeconds = 2
 				Write-Host "Going to test point: $($circuitPoint.X) $($circuitPoint.Y) with a $dwellSeconds second pause" -ForegroundColor Green
 				. "$PSScriptRoot\goto-testpoint.ps1" $circuitPoint.X $circuitPoint.Y $testZgap -noecho -bedMaxX $bedMaxX -bedMaxY $bedMaxY
-				. "$PSScriptRoot\..\octoprint\send-commands.ps1" "G4 S$dwellSeconds" -noinfo
+				. "$octoPrintPath\send-commands.ps1" "G4 S$dwellSeconds" -noinfo
 				#Start-Sleep -Seconds 2
 			}
 			. "$PSScriptRoot\goto-testpoint.ps1" $currentTestPoint.X $currentTestPoint.Y $testZgap -noecho -bedMaxX $bedMaxX -bedMaxY $bedMaxY
