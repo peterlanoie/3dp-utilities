@@ -6,32 +6,6 @@ class LineActionArgs {
 	[string] $lineText
 }
 
-# function Invoke-ForEachLine {
-# 	param (
-# 		[string[]] $lines,
-# 		[System.Action[LineActionArgs]] $lineAction
-# 	)
-
-# 	$lineCount = $lines.Count
-# 	$actionArgs = New-Object -TypeName LineActionArgs
-
-# 	for ($i = 0; $i -lt $lineCount ; $i++) {
-# 		$actionArgs.lineNumber = $i
-# 		$actionArgs.isNewLayer = $false
-# 		Write-Progress -Activity "Processing GCode lines" -PercentComplete ($i / $lineCount * 100)
-# 		$actionArgs.lineText = $line = $lines[$i]
-# #		$lineNumStr = ([string]$newLineCount).PadLeft(6, " ") + ":"
-
-# 		if ($line.StartsWith(";LAYER:")) {
-# 			$actionArgs.layerNumber = [int]$line.Replace(";LAYER:", "") + 1
-# 			Write-Host "[$i] Found start of layer $($actionArgs.layerNumber)"
-# 			$actionArgs.isNewLayer = $true
-# 		}
-
-# 		$lineAction.Invoke([LineActionArgs]$actionArgs)
-# 	}
-# }
-
 function Update-File {
 	param (
 		[string] $infile,
