@@ -11,7 +11,8 @@ function Update-File {
 		[string] $infile,
 		[string] $outFileSuffix,
 		[bool] $overwrite,
-		[System.Func[LineActionArgs, String[]]] $updateAction
+		[System.Func[LineActionArgs, String[]]] $updateAction,
+		[System.Action[string]] $prescanAction
 	)
 	$ErrorActionPreference = 'Stop'
 	Write-Host "==========================================================="
@@ -60,13 +61,21 @@ function Update-File {
 
 	$lineIterator = [System.IO.File]::ReadLines($infile)
 
+	$stepTime = Get-Date
 	Write-Host "Doing file prescan..."
 	foreach ($line in $lineIterator) {
 		$lineCount++
 		if ($line.StartsWith(";LAYER:")) {
 			$layerCount++
 		}
+		if ($null -ne $prescanAction) {
+			$prescanAction.Invoke($line)
+		}
 	}
+	$endTime = Get-Date
+	$elapsedTime = $endTime - $stepTime
+	Write-Host "Prescan Time: $($elapsedTime)"
+	
 	Write-Host "Found $layerCount layers in $lineCount lines"
 #	$lineIterator.Reset()
 
