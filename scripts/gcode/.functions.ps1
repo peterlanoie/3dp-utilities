@@ -108,10 +108,10 @@ function Update-File {
 		# }
 	}
 	#final flush
-	[System.IO.File]::AppendAllText($tempOutFile, $newLines)
+	# [System.IO.File]::AppendAllText($tempOutFile, $newLines)
 
-	Move-Item -Path $tempOutFile -Destination $outFileName -Force
-#	Set-Content -Path $outFileName -Value $newLines
+	# Move-Item -Path $tempOutFile -Destination $outFileName -Force
+	Set-Content -Path $outFileName -Value $newLines
 
 	$endTime = Get-Date
 	$elapsedTime = $endTime - $startTime
