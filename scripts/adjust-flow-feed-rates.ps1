@@ -13,31 +13,39 @@ function Write-Help {
 	Write-Host "    - [F] To set current feedrate"
 	Write-Host "    - ► [Right Arrow] increase feedrate by 1%"
 	Write-Host "    - ◄ [Left Arrow] decrease feedrate by 1%"
-	Write-Host "    - [SHIFT]+[F] Reset to initial feedrate ($startFeedRate%)"
+	Write-Host "    - [SHIFT]+[F] Reset to initial feedrate ($startFeedRate %%)"
 	Write-Host "  - Flow Rate"
 	Write-Host "    - [E] To set current flowrate"
 	Write-Host "    - ▲ [Up Arrow] increase flowrate by 1%"
 	Write-Host "    - ▼ [Down Arrow] decrease flowrate by 1%"
-	Write-Host "    - [SHIFT]+[E] Reset to initial flowrate ($startFlowRate%)"
+	Write-Host "    - [SHIFT]+[E] Reset to initial flowrate ($startFlowRate %%)"
+	Write-Host "  - [SHIFT]+[R] Reset to initial flow and fee rates"
 	Write-Host "  - [H] - Write out this help text again"
 	Write-Host "  - [Q]/[ESC] - Quit"
 }
 
+
 Write-Help
 $running = $true
 while($running){
-	Write-Host "Current flow rate (▲ ▼): $flowRate%"
-	Write-Host "Current feed rate (◄ ►): $feedRate%"
+	
+	Write-Host "Current flow rate (E ▲ ▼): $flowRate%"
+	Write-Host "Current feed rate (F ◄ ►): $feedRate%"
 	$keyInput = [System.Console]::ReadKey($true)
 	$feedDirection = $flowDirection = 0
 	if ($keyInput.Modifiers -eq "Shift") {
 		switch -regex ($keyInput.KeyChar){
-			"z" {
+			"e" {
 				Write-Host "Resetting flow rate to original: $startFlowRate"
 				$newFlowRate = $startFlowRate
 			}
 			"f" {
 				Write-Host "Resetting feed rate to original: $startFeedRate"
+				$newFeedRate = $startFeedRate
+			}
+			"r" {
+				Write-Host "Resetting feed and flow rate to originals"
+				$newFlowRate = $startFlowRate
 				$newFeedRate = $startFeedRate
 			}
 		}
