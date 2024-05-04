@@ -55,6 +55,7 @@ function Update-File {
 	}
 	
 #	$fileSize = (Get-Item $infile).length
+	$isPrusaSliced = $false
 	$processedLength = 0
 	$layerCount = 0
 	$lineCount = 0
@@ -65,8 +66,18 @@ function Update-File {
 	Write-Host "Doing file prescan..."
 	foreach ($line in $lineIterator) {
 		$lineCount++
-		if ($line.StartsWith(";LAYER:")) {
-			$layerCount++
+		if ($line.Contains("PrusaSlicer") -and -not $isPrusaSliced) {
+			$isPrusaSliced = $true
+			$layerCount++ # there's no later number value in Prusa gcode, start at 1
+		}
+		if ($isPrusaSliced) {
+			if ($line.StartsWith(";LAYER_CHANGE")) {
+				$layerCount++
+			}
+		} else {
+			if ($line.StartsWith(";LAYER:")) {
+				$layerCount++
+			}
 		}
 		if ($null -ne $prescanAction) {
 			$prescanAction.Invoke($line)
